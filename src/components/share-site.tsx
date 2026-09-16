@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { t } from "@/i18n";
+import { site } from "@/lib/site";
 import { QrCode } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { CopyButton } from "./copy-button";
@@ -17,7 +18,7 @@ export function ShareSite() {
         size="icon"
         className="size-8 rounded-full text-muted-foreground md:size-9 md:rounded-lg"
         aria-label={t("分享网站")}
-        title={t("分享网站")}
+        title={t("分享 {0}", [site.name])}
         onClick={() => setOpen(true)}
       >
         <QrCode className="size-4" aria-hidden="true" />
@@ -25,7 +26,7 @@ export function ShareSite() {
       <ResponsiveDialog
         open={open}
         onOpenChange={setOpen}
-        title={t("分享网站")}
+        title={t("分享 {0}", [site.name])}
         description={t("把实用的网络工具，分享给需要的人。")}
       >
         <div className="space-y-3">

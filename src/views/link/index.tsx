@@ -219,7 +219,7 @@ export default function LinkPage() {
   const [params] = useSearchParams();
   const exits = params.get("view") === "exits";
   useEffect(() => {
-    document.title = t("网络连通 - IP 网络工具");
+    document.title = t("网络连通 - IPCheckKit");
   }, []);
   if (exits) return <Navigate replace to="/network/exits" />;
   return (

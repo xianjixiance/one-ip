@@ -53,13 +53,13 @@ export function setLocale(next: Locale) {
 
 export function initializeLocale() {
   document.documentElement.lang = locale;
-  document.title = t("IP 网络工具概览");
+  document.title = t("IPCheckKit 概览");
   const description = document.querySelector('meta[name="description"]');
   if (description)
     description.setAttribute(
       "content",
       t(
-        "IP 查询、网站分流、WebRTC 检测、全球 Ping、服务状态和 WHOIS 查询工具。",
+        "IPCheckKit 提供 IP 查询、网络诊断、浏览器检测与 AI 服务连通性检测，看清你的网络环境。",
       ),
     );
 }

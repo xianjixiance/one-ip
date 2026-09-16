@@ -94,7 +94,7 @@ export function HomePage() {
     `${mobile}-${orderedTargets.map(({ target }) => target.name).join("|")}`,
   );
   useEffect(() => {
-    document.title = t("概览 - IP 网络工具");
+    document.title = t("概览 - IPCheckKit");
   }, []);
   const probes = useQueries({
     queries: [

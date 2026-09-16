@@ -1,5 +1,6 @@
 import { PageHeading, ToolCard } from "@/components/toolkit";
 import { t } from "@/i18n";
+import { site } from "@/lib/site";
 
 export default function PolicyPage({ page }: { page: "terms" | "privacy" }) {
   const sections = {
@@ -93,7 +94,7 @@ export default function PolicyPage({ page }: { page: "terms" | "privacy" }) {
       [
         t("保存与清除"),
         t(
-          "查询历史在当前浏览器按类别保留最近 10 条成功查询及结果，清除本站数据即可删除。服务端使用请求 IP 做限流；托管配置启用了采样日志，实际记录与保留时间取决于部署设置。清除浏览器数据不会删除第三方或托管服务的记录。如需咨询相关数据，请联系作者并说明请求时间和功能。",
+          "查询历史在当前浏览器按类别保留最近 10 条成功查询及结果，清除本站数据即可删除。服务端使用请求 IP 做限流；托管配置启用了采样日志，实际记录与保留时间取决于部署设置。清除浏览器数据不会删除第三方或托管服务的记录。如需咨询相关数据，请通过项目反馈入口联系本站维护者。",
         ),
       ],
     ],
@@ -109,15 +110,19 @@ export default function PolicyPage({ page }: { page: "terms" | "privacy" }) {
           <p className="text-sm leading-6 text-muted-foreground">{body}</p>
         </ToolCard>
       ))}
-      <ToolCard title={t("联系作者")}>
+      <ToolCard title={t("联系维护者")}>
         <p className="mb-2 text-sm text-muted-foreground">
-          {t("如对本站使用或隐私有疑问，请通过邮箱联系作者。")}
+          {t(
+            "如对本站使用或隐私有疑问，请通过 GitHub Issues 联系本站维护者。公开反馈中请勿包含完整 IP、指纹标识或其他敏感信息。",
+          )}
         </p>
         <a
           className="text-sm text-primary hover:underline"
-          href="mailto:ip@huzhihui.com"
+          href={site.support}
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          ip@huzhihui.com
+          {t("问题反馈")}
         </a>
       </ToolCard>
     </div>

@@ -4,7 +4,7 @@ import { SplitResults } from "@/views/home/split-results";
 
 export default function ExitsPage() {
   useEffect(() => {
-    document.title = t("分流出口 - IP 网络工具");
+    document.title = t("分流出口 - IPCheckKit");
   }, []);
   return (
     <>

@@ -1,6 +1,6 @@
-<img src="public/icon.svg" alt="One IP Logo" width="96" height="96" />
+<img src="public/icon.svg" alt="IPCheckKit Logo" width="96" height="96" />
 
-# One IP
+# IPCheckKit
 
 <p align="left">
   <img src="https://img.shields.io/badge/React-19-282C34?logo=react&amp;logoColor=61DAFB" alt="React 19" />
@@ -19,27 +19,31 @@
 
 IP 查询、网络诊断、浏览器检测与 AI 服务状态工具箱。
 
+IPCheckKit 基于 [One IP](https://github.com/zhihui-hu/one-ip) 开发，保留原项目及第三方署名，采用 [AGPL-3.0-only](LICENSE) 许可证。本站由本 Fork 独立维护。
+
+生产域名：**https://ipcheckkit.com**。部署步骤见 [Cloudflare 部署说明](docs/deployment.md)。
+
 **中文** · [English](README.en.md)
 
-[在线体验](https://ip.huzhihui.com/) · [GitHub](https://github.com/zhihui-hu/one-ip)
+[在线体验](https://ipcheckkit.com/) · [GitHub](https://github.com/xianjixiance/one-ip)
 
 社区友链：[LINUX DO](https://linux.do/) · 真诚、友善、团结、专业。
 
 点击下方按钮，一键部署到 Cloudflare。
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fzhihui-hu%2Fone-ip)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fxianjixiance%2Fone-ip)
 
 ## Cloudflare 部署教程
 
-1. [Fork 本项目](https://github.com/zhihui-hu/one-ip/fork)到你的 GitHub 账号。
+1. 确认 `ipcheckkit.com` 已接入你的 Cloudflare 账户，域名状态为 Active。
 2. 登录 [Cloudflare 控制台](https://dash.cloudflare.com/)，进入 **Workers & Pages**，创建 Worker，选择导入 Git 仓库。
-3. 连接 GitHub，选择你的 `one-ip` Fork，生产分支填 `main`。
-4. 构建命令填 `pnpm build`，部署命令填 `pnpm deploy`。使用 Node.js 24 和 pnpm 10.32.1，根目录保持默认。
-5. 点击部署，完成后打开 `workers.dev` 地址。自定义域名在 Worker 设置中绑定。
+3. 连接 GitHub，选择 `xianjixiance/one-ip`，生产分支填 `main`。
+4. 构建命令填 `pnpm build && pnpm test && pnpm lint`，部署命令填 `pnpm deploy`。使用 Node.js 24 和 pnpm 10.32.1，根目录保持默认。
+5. Worker 名称使用 `ipcheckkit`。点击部署，Wrangler 将按仓库配置绑定 `ipcheckkit.com`，完成后访问生产域名。
 
 项目使用 **Cloudflare Workers + Static Assets**，`/api/*` 接口需要 Worker。基础功能无需应用环境变量或 API Key。Turnstile 和 reCAPTCHA 的配置见“验证体验”。
 
-Workers Builds 会在 `main` 收到提交时构建和部署。上方按钮使用原项目地址；需要保留 Fork 关系和更新工作流时，请按教程导入你的 Fork。
+Workers Builds 会在 `main` 收到提交时构建和部署。上方按钮使用本 Fork 地址；建议按教程导入现有仓库。
 
 ## 功能
 
@@ -65,14 +69,14 @@ Workers Builds 会在 `main` 收到提交时构建和部署。上方按钮使用
 
 ```bash
 # 当前请求的公网出口 IP，终端文本
-curl -fsS 'https://ip.huzhihui.com/api/ip/health?format=text'
+curl -fsS 'https://ipcheckkit.com/api/ip/health?format=text'
 
 # 默认返回 JSON，便于脚本处理
-curl -fsS 'https://ip.huzhihui.com/api/ip/health'
+curl -fsS 'https://ipcheckkit.com/api/ip/health'
 
 # 指定公网 IPv4 或 IPv6
-curl -fsS 'https://ip.huzhihui.com/api/ip/health?ip=1.1.1.1'
-curl -fsS 'https://ip.huzhihui.com/api/ip/health?ip=2606:4700:4700::1111&format=text'
+curl -fsS 'https://ipcheckkit.com/api/ip/health?ip=1.1.1.1'
+curl -fsS 'https://ipcheckkit.com/api/ip/health?ip=2606:4700:4700::1111&format=text'
 ```
 
 自部署时替换域名。本地开发使用 `http://127.0.0.1:8787`，必须指定 `ip`。省略 `ip` 时使用 Cloudflare 识别的本次请求出口；经过代理时会查询代理出口。
@@ -83,7 +87,7 @@ curl -fsS 'https://ip.huzhihui.com/api/ip/health?ip=2606:4700:4700::1111&format=
 
 ## 界面预览
 
-截图遮盖了 IP、具体位置及运营商 / ASN，数值不是实时结果。
+以下为上游项目的功能预览，尚未替换为 IPCheckKit 品牌截图。截图遮盖了 IP、具体位置及运营商 / ASN，数值不是实时结果。
 
 ![桌面首页（已打码）](docs/screenshots/desktop-home-redacted.png)
 
@@ -124,7 +128,7 @@ Workers Builds 和 GitHub Actions 选择一种部署方式，避免重复发布�
 | Secret   | `CLOUDFLARE_API_TOKEN`  | 目标账户的 Worker 部署凭证 |
 | Secret   | `CLOUDFLARE_ACCOUNT_ID` | 目标 Cloudflare 账户 ID    |
 
-推送到 `main`，或运行 `Build and deploy one-ip`。构建和测试通过后进入部署。外部 PR 执行测试，不获得部署凭证。这些凭证用于 CI。
+推送到 `main`，或运行 `Build and deploy IPCheckKit`。构建和测试通过后进入部署。外部 PR 执行测试，不获得部署凭证。这些凭证用于 CI。
 
 ## 本地开发与部署
 

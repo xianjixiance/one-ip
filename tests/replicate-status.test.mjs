@@ -65,7 +65,7 @@ test("migrated AI services use verified JSON endpoints", async (t) => {
   );
   t.mock.method(globalThis, "fetch", async (url, init) => {
     assert.equal(url, "https://www.cloudflarestatus.com/api/v2/summary.json");
-    assert.match(init.headers["User-Agent"], /One-IP/);
+    assert.match(init.headers["User-Agent"], /IPCheckKit/);
     return Response.json(data());
   });
   assert.equal(

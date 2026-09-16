@@ -70,7 +70,7 @@ export async function ipHealth(request, env) {
     // eslint-disable-next-line no-control-regex -- Prevent terminal escape sequences in upstream values.
     String(value ?? "unknown").replace(/[\u0000-\u001f\u007f-\u009f]/g, " ");
   const lines = [
-    "One IP — IP health",
+    "IPCheckKit — IP health",
     ...Object.entries(result).filter(([key]) => key !== "flags"),
     ...Object.entries(result.flags),
   ].map((row) => (Array.isArray(row) ? `${row[0]}: ${display(row[1])}` : row));

@@ -1,5 +1,5 @@
 {
-  "name": "ip",
+  "name": "ipcheckkit",
   "private": true,
   "license": "AGPL-3.0-only",
   "packageManager": "pnpm@10.32.1",
@@ -71,7 +71,7 @@
     "vite": "^8.2.2",
     "wrangler": "^4.130.0"
   },
-  "description": "IP diagnostics SPA with Cloudflare Workers",
+  "description": "IPCheckKit — IP lookup and network diagnostics on Cloudflare Workers",
   "keywords": [
     "react",
     "vite",

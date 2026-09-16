@@ -12,6 +12,7 @@ import { UnderlineHover } from "@/components/underline-hover";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/hooks/use-theme";
 import { t } from "@/i18n";
+import { site } from "@/lib/site";
 import { Search, Globe, Cable, Activity, Sparkles } from "lucide-react";
 import { Tabs } from "radix-ui";
 import { Toaster } from "sonner";
@@ -83,9 +84,10 @@ export function AppLayout() {
           <Link
             to="/"
             className="flex items-center gap-2 text-sm font-semibold"
-            aria-label={t("IP 网络工具概览")}
+            aria-label={t("IPCheckKit 概览")}
           >
             <img src="/icon.svg" width="24" height="24" alt="" />
+            <span>{site.name}</span>
           </Link>
           <div className="flex items-center gap-1">
             <ShareSite />
@@ -114,10 +116,11 @@ export function AppLayout() {
               )}
               <Link
                 to="/"
-                aria-label={t("IP 网络工具概览")}
-                className="site-home-link flex size-9 shrink-0 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-ring"
+                aria-label={t("IPCheckKit 概览")}
+                className="site-home-link flex shrink-0 items-center gap-2 rounded-lg text-sm font-semibold focus-visible:outline-2 focus-visible:outline-ring"
               >
                 <img src="/icon.svg" alt="" width="32" height="32" />
+                <span>{site.name}</span>
               </Link>
               <ScrollArea className="nav-tabs-scroll">
                 {list}
@@ -148,13 +151,9 @@ export function AppLayout() {
           </Tabs.Content>
         </AnimatedSegmentedTabs>
         <footer className="app-footer">
-          © {new Date().getFullYear()} IP ·{" "}
+          © {new Date().getFullYear()} {site.name} ·{" "}
           <UnderlineHover asChild>
-            <a
-              href="https://huzhihui.com/blog/one-ip-guide"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={site.docs} target="_blank" rel="noopener noreferrer">
               {t("使用文档")}
             </a>
           </UnderlineHover>{" "}
@@ -173,7 +172,7 @@ export function AppLayout() {
           ·{" "}
           <UnderlineHover asChild>
             <a
-              href="https://github.com/zhihui-hu/one-ip"
+              href={site.repository}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 align-middle"
@@ -183,7 +182,15 @@ export function AppLayout() {
           </UnderlineHover>{" "}
           ·{" "}
           <UnderlineHover asChild>
-            <a href="mailto:ip@huzhihui.com">{t("联系作者")}</a>
+            <a href={site.support} target="_blank" rel="noopener noreferrer">
+              {t("问题反馈")}
+            </a>
+          </UnderlineHover>{" "}
+          ·{" "}
+          <UnderlineHover asChild>
+            <a href={site.upstream} target="_blank" rel="noopener noreferrer">
+              {t("基于 One IP")}
+            </a>
           </UnderlineHover>
         </footer>
       </div>

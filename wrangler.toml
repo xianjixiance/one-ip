@@ -1,7 +1,9 @@
-name = "one-ip"
+name = "ipcheckkit"
 main = "public/worker/index.js"
 compatibility_date = "2026-09-09"
 compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+routes = [{ pattern = "ipcheckkit.com", custom_domain = true }]
 
 [assets]
 directory = "./dist"
@@ -31,6 +33,9 @@ namespace_id = "1002"
 simple = { limit = 5, period = 60 }
 
 # Local development forwards all page and asset requests to Vite.
+[env.local]
+name = "ipcheckkit-local"
+routes = []
 [env.local.assets]
 directory = "./public"
 binding = "ASSETS"

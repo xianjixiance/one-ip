@@ -1,4 +1,4 @@
-# One IP
+# IPCheckKit
 
 <p align="left">
   <img src="https://img.shields.io/badge/React-19-282C34?logo=react&amp;logoColor=61DAFB" alt="React 19" />
@@ -17,13 +17,17 @@
 
 A toolbox for IP lookups, network diagnostics, browser checks and AI service status.
 
+IPCheckKit is an independently maintained fork of [One IP](https://github.com/zhihui-hu/one-ip), licensed under [AGPL-3.0-only](LICENSE). Upstream and third-party attribution is retained.
+
+Production domain: **https://ipcheckkit.com**. See [deployment instructions](docs/deployment.md).
+
 [中文](README.md) · **English**
 
-[Live demo](https://ip.huzhihui.com/) · [GitHub](https://github.com/zhihui-hu/one-ip)
+[Live demo](https://ipcheckkit.com/) · [GitHub](https://github.com/xianjixiance/one-ip)
 
 Click the button below for one-click deployment to Cloudflare.
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fzhihui-hu%2Fone-ip)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2Fxianjixiance%2Fone-ip)
 
 ## Terminal and API
 
@@ -31,12 +35,12 @@ After deploying this version, use `GET /api/ip/health` without an API key:
 
 ```bash
 # Current request's public egress IP, readable terminal output
-curl -fsS 'https://ip.huzhihui.com/api/ip/health?format=text'
+curl -fsS 'https://ipcheckkit.com/api/ip/health?format=text'
 # JSON (default)
-curl -fsS 'https://ip.huzhihui.com/api/ip/health'
+curl -fsS 'https://ipcheckkit.com/api/ip/health'
 # Explicit public IPv4 or IPv6
-curl -fsS 'https://ip.huzhihui.com/api/ip/health?ip=1.1.1.1'
-curl -fsS 'https://ip.huzhihui.com/api/ip/health?ip=2606:4700:4700::1111&format=text'
+curl -fsS 'https://ipcheckkit.com/api/ip/health?ip=1.1.1.1'
+curl -fsS 'https://ipcheckkit.com/api/ip/health?ip=2606:4700:4700::1111&format=text'
 ```
 
 Replace the domain for your deployment. Local development uses `http://127.0.0.1:8787` and requires `ip`. Without `ip`, the API uses the caller address identified by Cloudflare; a proxy changes that egress address.
@@ -47,15 +51,15 @@ Returns `ip`, `source`, `checked_at`, `score`, `status`, location, ISP, ASN and 
 
 ## Deploy to Cloudflare
 
-1. [Fork this project](https://github.com/zhihui-hu/one-ip/fork) into your GitHub account.
+1. Add `ipcheckkit.com` to your Cloudflare account and wait for the zone to become Active.
 2. Open the [Cloudflare dashboard](https://dash.cloudflare.com/), go to **Workers & Pages**, create a Worker and choose to import a Git repository.
-3. Connect GitHub, select your `one-ip` fork and set the production branch to `main`.
-4. Set the build command to `pnpm build` and the deploy command to `pnpm deploy`. Use Node.js 24 and pnpm 10.32.1. Keep the default root directory.
-5. Deploy and open the assigned `workers.dev` address. Use the Worker settings to connect a custom domain.
+3. Connect GitHub, select `xianjixiance/one-ip` and set the production branch to `main`.
+4. Set the build command to `pnpm build && pnpm test && pnpm lint` and the deploy command to `pnpm deploy`. Use Node.js 24 and pnpm 10.32.1. Keep the default root directory.
+5. Name the Worker `ipcheckkit` and deploy. Wrangler binds `ipcheckkit.com` using the repository configuration; open that domain after deployment.
 
 The project uses **Cloudflare Workers with Static Assets**. The `/api/*` routes need a Worker. Core features require no application environment variables or API keys. See “Verification” for Turnstile and reCAPTCHA setup.
 
-Workers Builds builds and deploys when `main` receives a commit. The button above points to the original repository. To preserve the fork relationship and update workflow, follow the steps to import your fork.
+Workers Builds builds and deploys when `main` receives a commit. The button above points to this fork. Import the existing repository to keep its history and update workflow.
 
 ## Features
 
@@ -118,7 +122,7 @@ Choose Workers Builds or GitHub Actions to avoid duplicate deployments. Actions 
 | Secret   | `CLOUDFLARE_API_TOKEN`  | Worker deployment credentials for the target account |
 | Secret   | `CLOUDFLARE_ACCOUNT_ID` | Target Cloudflare account ID                         |
 
-Push to `main` or run `Build and deploy one-ip`. Deployment starts after builds and tests pass. External PRs run tests without deployment credentials. These credentials are used by CI.
+Push to `main` or run `Build and deploy IPCheckKit`. Deployment starts after builds and tests pass. External PRs run tests without deployment credentials. These credentials are used by CI.
 
 ## Local development and deployment
 

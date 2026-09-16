@@ -1,4 +1,5 @@
 import { t } from "@/i18n";
+import { site } from "@/lib/site";
 import { ApiCodeBlock } from "./api-code-block";
 
 const example = JSON.stringify(
@@ -38,7 +39,7 @@ export default function ApiUsagePage() {
       </h1>
       <p className="leading-7 text-muted-foreground">
         {t(
-          "One IP 提供公开 API，可查询请求出口的 IP、位置信息、ASN、信誉分和风险标记，无需 API Key。",
+          "IPCheckKit 提供公开 API，可查询请求出口的 IP、位置信息、ASN、信誉分和风险标记，无需 API Key。",
         )}
       </p>
       <p className="break-words leading-7">
@@ -55,7 +56,7 @@ export default function ApiUsagePage() {
       <ApiCodeBlock code={command} language="bash" />
       <a
         className="inline-block text-sm text-primary hover:underline"
-        href="https://huzhihui.com/blog/one-ip-guide"
+        href={site.docs}
         target="_blank"
         rel="noopener noreferrer"
       >
