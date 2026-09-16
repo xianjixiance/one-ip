@@ -22,7 +22,7 @@ pnpm test
 pnpm lint
 pnpm exec wrangler login
 pnpm exec wrangler whoami
-pnpm deploy
+pnpm run deploy
 ```
 
 存在多个 Cloudflare 账户时，明确选择拥有 `ipcheckkit.com` 的账户，或通过 `CLOUDFLARE_ACCOUNT_ID` 指定该账户。不要提交 API Token 或其他凭证。
@@ -41,7 +41,7 @@ pnpm deploy
 | Node.js     | `24`                                   |
 | pnpm        | `10.32.1`                              |
 | 构建命令    | `pnpm build && pnpm test && pnpm lint` |
-| 部署命令    | `pnpm deploy`                          |
+| 部署命令    | `pnpm run deploy`                      |
 
 首次由 CLI 部署后，可在已有 Worker 中连接 Git 构建。使用 Workers Builds 时，保持 GitHub Actions 的 `ENABLE_CF_DEPLOY` 未设置或为 `false`，避免两套系统重复发布。GitHub Actions 仍负责构建、测试和 lint。
 

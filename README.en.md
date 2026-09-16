@@ -54,7 +54,7 @@ Returns `ip`, `source`, `checked_at`, `score`, `status`, location, ISP, ASN and 
 1. Add `ipcheckkit.com` to your Cloudflare account and wait for the zone to become Active.
 2. Open the [Cloudflare dashboard](https://dash.cloudflare.com/), go to **Workers & Pages**, create a Worker and choose to import a Git repository.
 3. Connect GitHub, select `xianjixiance/one-ip` and set the production branch to `main`.
-4. Set the build command to `pnpm build && pnpm test && pnpm lint` and the deploy command to `pnpm deploy`. Use Node.js 24 and pnpm 10.32.1. Keep the default root directory.
+4. Set the build command to `pnpm build && pnpm test && pnpm lint` and the deploy command to `pnpm run deploy`. Use Node.js 24 and pnpm 10.32.1. Keep the default root directory.
 5. Name the Worker `ipcheckkit` and deploy. Wrangler binds `ipcheckkit.com` using the repository configuration; open that domain after deployment.
 
 The project uses **Cloudflare Workers with Static Assets**. The `/api/*` routes need a Worker. Core features require no application environment variables or API keys. See “Verification” for Turnstile and reCAPTCHA setup.
@@ -140,10 +140,10 @@ pnpm lint
 
 # Log in to Cloudflare and deploy
 pnpm exec wrangler login
-pnpm deploy
+pnpm run deploy
 ```
 
-`pnpm deploy` uses the build output in `dist`; run `pnpm build` before deployment. `make deploy` updates the version, builds and deploys without a secrets file.
+`pnpm run deploy` uses the build output in `dist`; run `pnpm build` before deployment. `make deploy` updates the version, builds and deploys without a secrets file.
 
 ## Verification (optional)
 

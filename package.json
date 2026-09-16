@@ -10,7 +10,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "deploy": "wrangler deploy",
+    "deploy": "wrangler deploy --env=''",
     "build": "tsc -b && vite build",
     "worker:dev": "node scripts/worker-dev.mjs",
     "worker:types": "wrangler types",
