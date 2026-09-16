@@ -143,7 +143,13 @@ export function AppLayout() {
           )}
         >
           <Tabs.Content value={activeRoute} asChild>
-            <main className="outline-none">
+            <main
+              className={
+                activeRoute === "/status/"
+                  ? "min-h-svh outline-none"
+                  : "outline-none"
+              }
+            >
               <RouteErrorBoundary key={pathname}>
                 <Suspense
                   fallback={

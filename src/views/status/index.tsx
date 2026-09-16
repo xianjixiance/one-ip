@@ -97,6 +97,14 @@ export default function StatusPage() {
       snapshot: statusSnapshot(queries[i], now),
     }))
     .filter((s) => filter === "全部" || s.group === filter);
+  const initialPending = rows.filter(
+    (service) => service.url && service.query.isPending,
+  ).length;
+  const [initialCheckComplete, setInitialCheckComplete] = useState(false);
+  // Once visible, keep results on screen during retries and background checks.
+  if (initialPending === 0 && !initialCheckComplete) {
+    setInitialCheckComplete(true);
+  }
   const sections = [
     [
       t("故障 / 维护"),
@@ -300,7 +308,26 @@ export default function StatusPage() {
           </ToolCard>
         ))}
       </div>
-      {mobile ? (
+      {!initialCheckComplete && initialPending > 0 ? (
+        <div className="min-h-svh">
+          <Card>
+            <CardContent>
+              <p role="status" className="mb-3 text-xs text-muted-foreground">
+                {t("正在查询服务状态…")} {rows.length - initialPending}/
+                {rows.length}
+              </p>
+              <div aria-hidden="true" className="divide-y divide-border/50">
+                {Array.from({ length: 8 }, (_, index) => (
+                  <div key={index} className="space-y-3 py-4">
+                    <div className="h-4 w-1/2 rounded bg-muted" />
+                    <div className="h-3 w-3/4 rounded bg-muted" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : mobile ? (
         <div className="space-y-3">
           {sections.map(
             ([label, items]) =>
