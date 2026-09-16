@@ -28,8 +28,9 @@
     "id": "2",
     "name": "SendGrid",
     "group": "开发",
-    "url": "https://status.sendgrid.com/api/v2/summary.json",
-    "page": "https://status.twilio.com"
+    "url": "https://status.twilio.com/api/v2/summary.json",
+    "page": "https://status.twilio.com",
+    "note": "仅汇总 Twilio 状态页中的 SendGrid 组件与相关事件。"
   },
   {
     "id": "3",

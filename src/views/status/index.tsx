@@ -19,8 +19,14 @@ import { t, locale } from "@/i18n";
 import { useQueries } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { getStatus } from "./api";
+import {
+  statusQueryPolicy,
+  statusSnapshot,
+  type StatusSnapshot,
+} from "./freshness";
 import { statusOrder } from "./order";
 import rawservices from "./services.json";
+import { useStatusClock } from "./use-status-clock";
 
 const services = rawservices.map((item) => ({
   ...item,
@@ -42,6 +48,30 @@ const labels: Record<string, string> = {
   critical: t("重大故障"),
   maintenance: t("维护中"),
 };
+function snapshotLabel(snapshot: StatusSnapshot) {
+  if (snapshot.freshness === "expired") return t("数据已过期");
+  if (snapshot.freshness === "error") return t("更新失败");
+  if (snapshot.freshness === "pending") return t("查询中...");
+  return labels[snapshot.indicator ?? ""] ?? t("待确认");
+}
+function previousLabel(snapshot: StatusSnapshot) {
+  return t("上次：{0}", [
+    labels[snapshot.previousIndicator ?? ""] ?? t("未知"),
+  ]);
+}
+function checkedTime(value: string) {
+  const date = new Date(value);
+  return date.toDateString() === new Date().toDateString()
+    ? date.toLocaleTimeString(locale)
+    : date.toLocaleString(locale);
+}
+const incidentLabels: Record<string, string> = {
+  investigating: t("调查中"),
+  identified: t("已定位"),
+  monitoring: t("恢复观察中"),
+  in_progress: t("维护中"),
+  verifying: t("维护验证中"),
+};
 export default function StatusPage() {
   const mobile = useIsMobile();
   const [params, setParams] = useSearchParams();
@@ -55,36 +85,33 @@ export default function StatusPage() {
       queryKey: ["service-status", s.id],
       enabled: Boolean(s.url),
       queryFn: ({ signal }: { signal: AbortSignal }) => getStatus(s.id, signal),
-      retry: false,
-      staleTime: 60_000,
-      refetchInterval: 120_000,
+      ...statusQueryPolicy,
     })),
   });
+  const now = useStatusClock(queries.map((query) => query.dataUpdatedAt));
   const pending = queries.some((q) => q.isFetching);
   const rows = services
-    .map((service, i) => ({ ...service, query: queries[i] }))
+    .map((service, i) => ({
+      ...service,
+      query: queries[i],
+      snapshot: statusSnapshot(queries[i], now),
+    }))
     .filter((s) => filter === "全部" || s.group === filter);
   const sections = [
     [
       t("故障 / 维护"),
       rows
-        .filter((s) => statusOrder(s.query.data?.status?.indicator) === 0)
+        .filter((s) => statusOrder(s.snapshot.indicator) === 0)
         .sort((a, b) => {
           const severity = ["critical", "major", "minor", "maintenance"];
           return (
-            severity.indexOf(a.query.data!.status.indicator) -
-            severity.indexOf(b.query.data!.status.indicator)
+            severity.indexOf(a.snapshot.indicator!) -
+            severity.indexOf(b.snapshot.indicator!)
           );
         }),
     ],
-    [
-      t("运行中"),
-      rows.filter((s) => s.query.data?.status?.indicator === "none"),
-    ],
-    [
-      t("待确认"),
-      rows.filter((s) => statusOrder(s.query.data?.status?.indicator) === 2),
-    ],
+    [t("运行中"), rows.filter((s) => s.snapshot.indicator === "none")],
+    [t("待确认"), rows.filter((s) => statusOrder(s.snapshot.indicator) === 2)],
   ] as const;
   const tableRows = sections.flatMap(([, items]) =>
     items.map((service) => ({
@@ -94,6 +121,7 @@ export default function StatusPage() {
       page: service.page,
       icon: service.icon,
       data: service.query.data,
+      snapshot: service.snapshot,
       loading: Boolean(service.url) && service.query.isPending,
       integrated: Boolean(service.url),
       officialStatus: service.officialStatus !== false,
@@ -121,8 +149,9 @@ export default function StatusPage() {
           </UnderlineHover>
           {!!row.original.data?.incidents?.length && (
             <Badge variant="secondary" className="shrink-0">
-              {row.original.data.incidents.length}
-              {t("个事件")}
+              {row.original.snapshot.historical
+                ? t("上次 {0} 个事件", [row.original.data.incidents.length])
+                : `${row.original.data.incidents.length}${t("个事件")}`}
             </Badge>
           )}
         </button>
@@ -140,37 +169,56 @@ export default function StatusPage() {
       header: t("状态"),
       cell: ({ row }) => {
         const service = row.original;
-        const indicator = service.data?.status?.indicator;
+        const indicator = service.snapshot.indicator;
         return (
-          <button
-            type="button"
-            onClick={() => setDetailId(service.id)}
-            aria-label={t("查看 {0} 状态详情", [service.name])}
-            className={`service-table-state service-card service-${indicator ?? "unknown"}`}
-          >
-            <i
-              className={`service-dot ${service.fetching ? "service-dot-loading" : ""}`}
-            />
-            <AnimatedValue value={`${service.loading}-${indicator}`}>
-              {service.loading ? (
-                <Pending>{t("查询中...")}</Pending>
-              ) : !service.integrated ? (
-                t("未接入")
-              ) : (
-                (labels[indicator ?? ""] ?? t("未知"))
-              )}
-            </AnimatedValue>
-          </button>
+          <div className="space-y-1">
+            <button
+              type="button"
+              onClick={() => setDetailId(service.id)}
+              aria-label={t("查看 {0} 状态详情", [service.name])}
+              className={`service-table-state service-card service-${indicator ?? "unknown"}`}
+            >
+              <i
+                className={`service-dot ${service.fetching ? "service-dot-loading" : ""}`}
+              />
+              <AnimatedValue
+                value={`${service.snapshot.freshness}-${indicator}`}
+              >
+                {service.loading ? (
+                  <Pending>{t("查询中...")}</Pending>
+                ) : !service.integrated ? (
+                  t("未接入")
+                ) : (
+                  snapshotLabel(service.snapshot)
+                )}
+              </AnimatedValue>
+            </button>
+            {service.snapshot.historical && (
+              <p className="text-xs text-muted-foreground">
+                {previousLabel(service.snapshot)}
+              </p>
+            )}
+            {service.fetching && service.data && (
+              <p className="text-xs text-muted-foreground">{t("正在更新…")}</p>
+            )}
+          </div>
         );
       },
     },
     {
       id: "updated",
-      header: t("更新时间"),
+      header: t("最近检查"),
       cell: ({ row }) => (
-        <span className="small muted">
+        <span
+          className="small muted"
+          title={
+            row.original.data?.fetchedAt
+              ? new Date(row.original.data.fetchedAt).toLocaleString(locale)
+              : undefined
+          }
+        >
           {row.original.data?.fetchedAt
-            ? new Date(row.original.data.fetchedAt).toLocaleTimeString(locale)
+            ? checkedTime(row.original.data.fetchedAt)
             : "—"}
         </span>
       ),
@@ -225,7 +273,7 @@ export default function StatusPage() {
             void Promise.all(
               queries
                 .filter((_, index) => services[index].url)
-                .map((q) => q.refetch()),
+                .map((q) => q.refetch({ cancelRefetch: false })),
             );
           }}
         >
@@ -264,7 +312,7 @@ export default function StatusPage() {
                     </h2>
                     <div className="divide-y divide-border/50">
                       {items.map((service) => {
-                        const indicator = service.query.data?.status?.indicator;
+                        const indicator = service.snapshot.indicator;
                         const incident = service.query.data?.incidents?.[0];
                         return (
                           <button
@@ -287,16 +335,30 @@ export default function StatusPage() {
                               <span
                                 className={`service-card service-${indicator ?? "unknown"} shrink-0 text-xs`}
                               >
-                                {service.query.isFetching && !service.query.data
-                                  ? t("查询中")
-                                  : !service.url
-                                    ? t("未接入")
-                                    : (labels[indicator ?? ""] ?? t("待确认"))}
+                                {!service.url
+                                  ? t("未接入")
+                                  : snapshotLabel(service.snapshot)}
                               </span>
                             </span>
+                            {service.snapshot.historical && (
+                              <span className="mt-1 block text-xs text-muted-foreground">
+                                {previousLabel(service.snapshot)}
+                              </span>
+                            )}
+                            {service.query.data?.fetchedAt && (
+                              <span className="mt-1 block text-xs text-muted-foreground">
+                                {t("最近检查：{0}", [
+                                  checkedTime(service.query.data.fetchedAt),
+                                ])}
+                                {service.query.isFetching &&
+                                  ` · ${t("正在更新…")}`}
+                              </span>
+                            )}
                             {incident && (
                               <span className="mt-1 block truncate text-xs text-muted-foreground">
-                                {incident.name}
+                                {service.snapshot.historical
+                                  ? t("上次事件：{0}", [incident.name])
+                                  : incident.name}
                               </span>
                             )}
                           </button>
@@ -324,19 +386,24 @@ export default function StatusPage() {
         </div>
       )}
       <p className="small muted">
-        {t("每 2 分钟自动检查。未知或查询失败不等于服务故障。")}
+        {t(
+          "页面可见时每 2 分钟检查，返回页面或网络恢复时刷新超过 1 分钟的数据。超过 5 分钟未成功检查会标记过期；查询失败不等于服务故障。",
+        )}
       </p>
       <ResponsiveDialog
         title={t("{0} · 服务详情", [detail?.name ?? t("服务")])}
         description={
           detail?.loading
             ? t("正在查询服务状态…")
-            : t(
-                detail?.error ??
-                  detail?.note ??
-                  detail?.data?.status?.description ??
-                  t("暂无说明"),
-              )
+            : detail?.error
+              ? t("状态更新失败，请稍后重试。")
+              : detail?.snapshot.historical
+                ? t("超过 5 分钟未成功检查，当前状态待确认。")
+                : t(
+                    detail?.note ??
+                      detail?.data?.status?.description ??
+                      t("暂无说明"),
+                  )
         }
         open={detailId !== null}
         onOpenChange={(open) => {
@@ -348,9 +415,13 @@ export default function StatusPage() {
             <Badge variant="secondary">
               {!detail.integrated
                 ? t("未接入")
-                : (labels[detail.data?.status?.indicator ?? ""] ?? t("未知"))}
+                : snapshotLabel(detail.snapshot)}
             </Badge>
             <span>{t(detail.group)}</span>
+            {detail.snapshot.historical && (
+              <span>{previousLabel(detail.snapshot)}</span>
+            )}
+            {detail.fetching && detail.data && <span>{t("正在更新…")}</span>}
             {detail.statusSource && (
               <span>{t("第三方 · {0} ↗", [detail.statusSource])}</span>
             )}
@@ -363,15 +434,28 @@ export default function StatusPage() {
             )}
             {detail.data?.fetchedAt && (
               <time>
-                {t("更新于")}
-                {new Date(detail.data.fetchedAt).toLocaleString(locale)}
+                {t("最近检查：{0}", [
+                  new Date(detail.data.fetchedAt).toLocaleString(locale),
+                ])}
               </time>
             )}
           </div>
         )}
+        {detail?.snapshot.historical && (
+          <p
+            className="rounded-lg bg-muted p-3 text-sm text-muted-foreground"
+            role="status"
+          >
+            {t("以下为上次成功检查的结果，当前状态待确认。")}
+          </p>
+        )}
         {!!detail?.data?.components?.length && (
           <section className="space-y-2">
-            <h3 className="text-sm font-medium">{t("服务组件")}</h3>
+            <h3 className="text-sm font-medium">
+              {detail.snapshot.historical
+                ? t("上次检查的组件状态")
+                : t("服务组件")}
+            </h3>
             <dl className="divide-y divide-border text-sm">
               {detail.data.components.map((component) => (
                 <div
@@ -387,9 +471,12 @@ export default function StatusPage() {
             </dl>
           </section>
         )}
-        <h3 className="text-sm font-medium">{t("当前事件")}</h3>
+        <h3 className="text-sm font-medium">
+          {detail?.snapshot.historical ? t("上次检查的事件") : t("当前事件")}
+        </h3>
         {!detail?.loading &&
           !detail?.error &&
+          !detail?.snapshot.historical &&
           detail?.data &&
           Array.isArray(detail.data.incidents) &&
           !detail.data.incidents.length && (
@@ -409,10 +496,29 @@ export default function StatusPage() {
           >
             <h3 className="font-medium">{incident.name}</h3>
             <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-              <Badge variant="secondary">{incident.status}</Badge>
+              <Badge variant="secondary">
+                {incidentLabels[incident.status.toLowerCase()] ??
+                  incident.status}
+              </Badge>
+              {!detail.snapshot.historical &&
+                [
+                  "investigating",
+                  "identified",
+                  "monitoring",
+                  "open",
+                  "ongoing",
+                  "disrupted",
+                  "degraded",
+                  "impacted",
+                  "alarm",
+                ].includes(incident.status.toLowerCase()) && (
+                  <span>{t("持续中")}</span>
+                )}
               {incident.updated_at && (
                 <time>
-                  {new Date(incident.updated_at).toLocaleString(locale)}
+                  {t("官方最后更新：{0}", [
+                    new Date(incident.updated_at).toLocaleString(locale),
+                  ])}
                 </time>
               )}
             </div>

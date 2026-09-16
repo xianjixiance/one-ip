@@ -1,4 +1,5 @@
 import { boundedJson, HttpError, upstream } from "./http.js";
+import { parseSendGrid } from "./sendgrid-status.js";
 import { parseTelegramStatus } from "./telegram-status.js";
 
 const unavailable = () => new HttpError(502, "官方状态数据暂不可用");
@@ -132,6 +133,7 @@ export function parseGemini(data) {
 }
 
 export async function getAiStatus(service) {
+  if (service.id === "2") return parseSendGrid(await upstream(service.url));
   if (service.id === "telegram")
     return parseTelegramStatus(
       await upstream(service.url, {
