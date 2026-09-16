@@ -1,15 +1,10 @@
 import { useEffect } from "react";
 import { t } from "@/i18n";
-import { SplitResults } from "@/views/home/split-results";
+import { SplitDashboard } from "@/views/home/split-dashboard";
 
 export default function ExitsPage() {
   useEffect(() => {
     document.title = t("分流出口 - IPCheckKit");
   }, []);
-  return (
-    <>
-      <h1 className="sr-only">{t("分流出口")}</h1>
-      <SplitResults />
-    </>
-  );
+  return <SplitDashboard />;
 }

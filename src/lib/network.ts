@@ -1,4 +1,14 @@
 import { t } from "@/i18n";
+import { normalizeIp } from "@/lib/ip-address";
+
+export class HttpError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "HttpError";
+    this.status = status;
+  }
+}
 
 export type ResponseMode = "json" | "text" | "opaque" | "headers";
 
@@ -31,7 +41,7 @@ export async function request<T>(
           } catch {
             /* Non-JSON upstream. */
           }
-          throw new Error(message);
+          throw new HttpError(message, response.status);
         }
         if (mode === "headers") return response.headers as T;
         return (
@@ -62,25 +72,31 @@ export function parseTrace(text: string) {
         return [line.slice(0, i), line.slice(i + 1)];
       }),
   );
-  if (!fields.ip || !/^[\da-fA-F:.]+$/.test(fields.ip))
-    throw new Error(t("目标站点未返回可读取的出口 IP"));
+  const ip = normalizeIp(fields.ip);
+  if (!ip) throw new Error(t("目标站点未返回可读取的出口 IP"));
   return {
-    ip: fields.ip,
+    ip,
     country_code: fields.loc,
     colo: fields.colo,
     source: "Cloudflare Trace",
   };
 }
 
-export async function trace(domain: string, signal?: AbortSignal) {
+export async function trace(
+  domain: string,
+  signal?: AbortSignal,
+  timeoutMs = 3000,
+) {
   return parseTrace(
     await request<string>(
       `https://${domain}/cdn-cgi/trace`,
       {
         signal: signal
-          ? AbortSignal.any([signal, AbortSignal.timeout(3000)])
-          : AbortSignal.timeout(3000),
+          ? AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)])
+          : AbortSignal.timeout(timeoutMs),
         cache: "no-store",
+        credentials: "omit",
+        redirect: "error",
       },
       "text",
     ),

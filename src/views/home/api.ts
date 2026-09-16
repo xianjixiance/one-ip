@@ -1,4 +1,5 @@
 import { t } from "@/i18n";
+import { normalizeIp } from "@/lib/ip-address";
 import { endpoint, request, trace } from "@/lib/network";
 import type { Geo } from "@/lib/types";
 
@@ -107,12 +108,12 @@ export async function detectSite(
   if (site.method === "unsupported")
     throw new Error(t(site.note ?? "未获取到可读取的出口 IP"));
   signal = signal
-    ? AbortSignal.any([signal, AbortSignal.timeout(3000)])
-    : AbortSignal.timeout(3000);
+    ? AbortSignal.any([signal, AbortSignal.timeout(6000)])
+    : AbortSignal.timeout(6000);
   signal.throwIfAborted();
   let geo: Geo;
   if (site.method === "cftrace" && site.domain)
-    geo = await trace(site.domain, signal);
+    geo = await trace(site.domain, signal, 6000);
   else if (
     (site.method === "ip-text" || site.method === "ip-json") &&
     site.url
@@ -122,12 +123,14 @@ export async function detectSite(
       const data = await request<{ ip?: string }>(site.url, {
         signal,
         cache: "no-store",
+        credentials: "omit",
+        redirect: "error",
       });
-      ip = data.ip;
+      ip = data?.ip;
     } else {
       const html = await request<string>(
         site.url,
-        { signal, cache: "no-store" },
+        { signal, cache: "no-store", credentials: "omit", redirect: "error" },
         "text",
       );
       const text = html.replace(/<[^>]*>/g, " ");
@@ -135,8 +138,8 @@ export async function detectSite(
         /(?:IP(?:地址)?|ip)[^\d]{0,30}((?:\d{1,3}\.){3}\d{1,3})/i,
       )?.[1];
     }
-    if (!ip || !/^[\da-fA-F:.]+$/.test(ip))
-      throw new Error(t("未获取到可读取的出口 IP"));
+    ip = normalizeIp(ip);
+    if (!ip) throw new Error(t("未获取到可读取的出口 IP"));
     geo = { ip, source: site.name };
   } else {
     const url =
@@ -144,15 +147,21 @@ export async function detectSite(
       "https://necaptcha.nosdn.127.net/ab7f4275c1744aa28e0a8f3a1c58c532.png";
     const headers = await request<Headers>(
       url,
-      { method: "HEAD", cache: "no-store", signal },
+      {
+        method: "HEAD",
+        cache: "no-store",
+        credentials: "omit",
+        redirect: "error",
+        signal,
+      },
       "headers",
     );
-    const ip =
+    const ip = normalizeIp(
       headers.get("cdn-user-ip") ??
-      headers.get("x-request-ip") ??
-      headers.get("x-response-cinfo");
-    if (!ip || !/^[\da-fA-F:.]+$/.test(ip))
-      throw new Error(t("未获取到可读取的出口 IP"));
+        headers.get("x-request-ip") ??
+        headers.get("x-response-cinfo"),
+    );
+    if (!ip) throw new Error(t("未获取到可读取的出口 IP"));
     geo = { ip, source: site.name };
   }
   return geo;

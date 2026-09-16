@@ -329,7 +329,7 @@ export function HomePage() {
           </CardContent>
         </Card>
       </div>
-      <SplitResults summary />
+      <SplitResults />
       <PlatformSummary />
       <BrowserSummary />
       <Card className="home-shortcuts">

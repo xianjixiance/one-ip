@@ -3,8 +3,11 @@ import { SiteLogo } from "@/components/site-logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { t } from "@/i18n";
+import { maskedIp } from "@/lib/network";
 import type { Geo } from "@/lib/types";
+import { hideIpAtom } from "@/store/privacy";
 import { gsap } from "gsap";
+import { useAtomValue } from "jotai";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { categoryStatusClass } from "./category-status";
@@ -28,6 +31,7 @@ export default function ExitMap({
   onSelect: (name: string) => void;
   mapOnly?: boolean;
 }) {
+  const hidden = useAtomValue(hideIpAtom);
   const [category, setCategory] = useState("all");
   const shownRows = rows.filter(
     (row) => category === "all" || row.extra?.includes(category),
@@ -112,7 +116,7 @@ export default function ExitMap({
         button.type = "button";
         button.style.cssText =
           "display:block;text-align:left;padding:6px 0;width:100%";
-        button.textContent = `${site.domain ?? site.name} · ${site.geo?.ip} · ${t("已读取出口")}`;
+        button.textContent = `${site.domain ?? t(site.name)} · ${maskedIp(site.geo?.ip ?? "", hidden)} · ${t("已读取出口")}`;
         button.onclick = () => onSelect(site.name);
         content.append(button);
       }

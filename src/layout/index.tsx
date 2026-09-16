@@ -171,23 +171,6 @@ export function AppLayout() {
           </UnderlineHover>{" "}
           ·{" "}
           <UnderlineHover asChild>
-            <a
-              href={site.repository}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 align-middle"
-            >
-              GitHub
-            </a>
-          </UnderlineHover>{" "}
-          ·{" "}
-          <UnderlineHover asChild>
-            <a href={site.support} target="_blank" rel="noopener noreferrer">
-              {t("问题反馈")}
-            </a>
-          </UnderlineHover>{" "}
-          ·{" "}
-          <UnderlineHover asChild>
             <a href={site.upstream} target="_blank" rel="noopener noreferrer">
               {t("基于 One IP")}
             </a>
