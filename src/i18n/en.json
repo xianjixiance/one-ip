@@ -688,6 +688,7 @@
   "检测类型": "Test type",
   "连通测试": "Connectivity test",
   "分流出口": "Routed egress",
+  "分流": "Egress",
   "优": "Excellent",
   "良": "Good",
   "慢": "Slow",

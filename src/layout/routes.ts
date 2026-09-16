@@ -5,13 +5,13 @@ export const navigationRoutes = [
   { value: "/", label: t("概览"), short: t("概览") },
   { value: "/ai/", label: t("AI 检测"), short: "AI" },
   { value: "/status/", label: t("服务状态"), short: t("状态") },
+  { value: "/network/exits", label: t("分流出口"), short: t("分流") },
   { value: "/network/", label: t("网络检测"), short: t("网络") },
   { value: "/browser/", label: t("浏览器检测"), short: t("浏览器") },
 ] as const;
 export const toolGroups = {
   network: [
     { path: "/network/connectivity", label: t("网站连通") },
-    { path: "/network/exits", label: t("分流出口") },
     { path: "/network/dns", label: t("DNS 出口") },
     { path: "/network/cdn", label: t("CDN 节点") },
     { path: "/network/ip", label: t("IP 检测") },
@@ -58,6 +58,7 @@ export const legacyRoutes: Record<string, string> = {
 export function activeNavigationRoute(pathname: string) {
   const path = pathname.replace(/\/+$/, "") || "/";
   if (path === "/") return "/";
+  if (path === "/network/exits") return "/network/exits";
   for (const [group, routes] of Object.entries(toolGroups)) {
     if (path === `/${group}` || routes.some((route) => route.path === path))
       return `/${group}/`;

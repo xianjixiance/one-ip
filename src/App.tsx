@@ -57,6 +57,7 @@ export function App() {
         <Route path="docs/api" element={<ApiUsagePage />} />
         <Route path="terms" element={<PolicyPage page="terms" />} />
         <Route path="privacy" element={<PolicyPage page="privacy" />} />
+        <Route path="network/exits" element={<ExitsPage />} />
         <Route path="network" element={<ToolLayout group="network" />}>
           <Route
             index
@@ -68,7 +69,6 @@ export function App() {
           </Route>
           <Route path="whois" element={<WhoisPage />} />
           <Route path="connectivity" element={<LinkPage />} />
-          <Route path="exits" element={<ExitsPage />} />
           <Route path="ping" element={<PingPage />} />
           <Route path="cdn" element={<CdnPage />} />
           <Route path="dns" element={<DnsExitPage />} />

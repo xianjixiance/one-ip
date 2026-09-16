@@ -13,7 +13,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/hooks/use-theme";
 import { t } from "@/i18n";
 import { site } from "@/lib/site";
-import { Search, Globe, Cable, Activity, Sparkles } from "lucide-react";
+import {
+  Search,
+  Globe,
+  Cable,
+  Activity,
+  Sparkles,
+  Network,
+} from "lucide-react";
 import { Tabs } from "radix-ui";
 import { Toaster } from "sonner";
 import { RouteErrorBoundary } from "./route-error-boundary";
@@ -25,6 +32,7 @@ const menuIcons = {
   "/": Search,
   "/browser/": Globe,
   "/network/": Cable,
+  "/network/exits": Network,
   "/ai/": Sparkles,
   "/status/": Activity,
 };
