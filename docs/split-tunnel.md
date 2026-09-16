@@ -29,3 +29,28 @@
 按需启动 HTTP、IPv4、IPv6、DNS 和 WebRTC 检查，整体最多采样约 20 秒，保留已经完成的 DNS 采样。WebRTC 与自身的 HTTP 对照端点比较；不同地址族分别核查。DNS 结果是解析器地址，不能直接和网站出口相等比较。结果不同不自动判定泄漏，未采集到结果也不代表安全。
 
 基础功能继续使用 Cloudflare Workers + Static Assets；本次增强没有增加数据库、付费服务或账户系统。外部检测接口仍可能因网络环境或服务策略变化而不可用。
+
+## 站点维护记录（2026-09-16）
+
+移除 Amazon、eBay、AliExpress、SHEIN、Etsy、Shopee、Lazada、Binance、Bybit 的失效探测配置，以及尚未接入出口接口的 Telegram。实测失败原因包括 404、跳转到首页或错误页、安全挑战和跨域限制。
+
+替换为以下同类站点，列表仍为 50 项：
+
+| 分类     | 站点          | 实际检测域名         |
+| -------- | ------------- | -------------------- |
+| 电商平台 | BigCommerce   | www.bigcommerce.com  |
+| 电商平台 | Shoplazza     | www.shoplazza.com    |
+| 电商平台 | SHOPLINE      | www.shopline.com     |
+| 电商平台 | Gumroad       | gumroad.com          |
+| 电商平台 | Payhip        | payhip.com           |
+| 电商平台 | Lemon Squeezy | www.lemonsqueezy.com |
+| 电商平台 | Sellfy        | sellfy.com           |
+| 加密货币 | Bitfinex      | www.bitfinex.com     |
+| 加密货币 | CoinGecko     | www.coingecko.com    |
+| 社交社区 | Patreon       | www.patreon.com      |
+
+这些站点均使用其自身检测域名的 `/cdn-cgi/trace`，不通过服务端代请求。接口预检确认 HTTP 200、有效 IP 和 `Access-Control-Allow-Origin: *`；随后在当前 Edge／网络环境中通过完整页面连续两轮验证，均为 50/50 成功。
+
+“电商平台”包括独立站建站、数字商品交易和购物平台；结果只代表表中具体域名，不代表某个商家的店铺域名，也不能代替被移除网站的出口结果。
+
+今后新增站点必须在浏览器中验证能读取有效 IP；不能仅凭首页可访问、使用某个 CDN 或请求返回 200 就认定支持出口检测。本次通过不保证所有地区、网络及后续时间都可用。

@@ -12,7 +12,7 @@ export const categories = [
   ["static", "静态资源"],
   ["tools", "实用工具"],
   ["media", "流媒体"],
-  ["ecommerce", "跨境电商"],
+  ["ecommerce", "电商平台"],
   ["crypto", "加密货币"],
   ["speed", "测速服务"],
 ] as const;

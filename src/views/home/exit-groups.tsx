@@ -17,7 +17,7 @@ const categories = [
   ["all", "全部"],
   ["ai", "AI 服务"],
   ["crypto", "加密货币"],
-  ["ecommerce", "跨境电商"],
+  ["ecommerce", "电商平台"],
   ["media", "流媒体"],
   ["social", "社交社区"],
   ["dev", "开发平台"],

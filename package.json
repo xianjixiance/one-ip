@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=24"
   },
-  "version": "26.916.1711",
+  "version": "26.916.1739",
   "type": "module",
   "scripts": {
     "dev": "vite",

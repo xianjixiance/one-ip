@@ -1,14 +1,5 @@
 [
   {
-    "name": "Telegram",
-    "type": "international",
-    "method": "unsupported",
-    "domain": "web.telegram.org",
-    "icon": "https://icons.duckduckgo.com/ip3/telegram.org.ico",
-    "extra": ["social"],
-    "note": "暂未接入可读取 Telegram 出口 IP 的接口；网页连通性请使用网站连通检测。"
-  },
-  {
     "name": "IP.cn",
     "type": "domestic",
     "method": "ip-text",
@@ -71,6 +62,14 @@
     "method": "cftrace",
     "domain": "medium.com",
     "icon": "https://icons.duckduckgo.com/ip3/medium.com.ico",
+    "extra": ["social"]
+  },
+  {
+    "name": "Patreon",
+    "type": "international",
+    "method": "cftrace",
+    "domain": "www.patreon.com",
+    "icon": "https://icons.duckduckgo.com/ip3/www.patreon.com.ico",
     "extra": ["social"]
   },
   {
@@ -162,11 +161,11 @@
     "extra": ["crypto"]
   },
   {
-    "name": "binance.com",
+    "name": "Bitfinex",
     "type": "international",
     "method": "cftrace",
-    "domain": "www.binance.com",
-    "icon": "https://icons.duckduckgo.com/ip3/binance.com.ico",
+    "domain": "www.bitfinex.com",
+    "icon": "https://icons.duckduckgo.com/ip3/www.bitfinex.com.ico",
     "extra": ["crypto"]
   },
   {
@@ -306,11 +305,11 @@
     "extra": ["crypto"]
   },
   {
-    "name": "bybit.com",
+    "name": "CoinGecko",
     "type": "international",
     "method": "cftrace",
-    "domain": "www.bybit.com",
-    "icon": "https://icons.duckduckgo.com/ip3/www.bybit.com.ico",
+    "domain": "www.coingecko.com",
+    "icon": "https://icons.duckduckgo.com/ip3/www.coingecko.com.ico",
     "extra": ["crypto"]
   },
   {
@@ -330,27 +329,27 @@
     "extra": ["crypto"]
   },
   {
-    "name": "amazon.com",
+    "name": "BigCommerce",
     "type": "international",
     "method": "cftrace",
-    "domain": "www.amazon.com",
-    "icon": "https://icons.duckduckgo.com/ip3/www.amazon.com.ico",
+    "domain": "www.bigcommerce.com",
+    "icon": "https://icons.duckduckgo.com/ip3/www.bigcommerce.com.ico",
     "extra": ["ecommerce"]
   },
   {
-    "name": "ebay.com",
+    "name": "Shoplazza",
     "type": "international",
     "method": "cftrace",
-    "domain": "www.ebay.com",
-    "icon": "https://icons.duckduckgo.com/ip3/www.ebay.com.ico",
+    "domain": "www.shoplazza.com",
+    "icon": "https://icons.duckduckgo.com/ip3/www.shoplazza.com.ico",
     "extra": ["ecommerce"]
   },
   {
-    "name": "aliexpress.com",
+    "name": "SHOPLINE",
     "type": "international",
     "method": "cftrace",
-    "domain": "www.aliexpress.com",
-    "icon": "https://icons.duckduckgo.com/ip3/www.aliexpress.com.ico",
+    "domain": "www.shopline.com",
+    "icon": "https://icons.duckduckgo.com/ip3/www.shopline.com.ico",
     "extra": ["ecommerce"]
   },
   {
@@ -362,35 +361,35 @@
     "extra": ["ecommerce"]
   },
   {
-    "name": "shein.com",
+    "name": "Gumroad",
     "type": "international",
     "method": "cftrace",
-    "domain": "www.shein.com",
-    "icon": "https://icons.duckduckgo.com/ip3/www.shein.com.ico",
+    "domain": "gumroad.com",
+    "icon": "https://icons.duckduckgo.com/ip3/gumroad.com.ico",
     "extra": ["ecommerce"]
   },
   {
-    "name": "etsy.com",
+    "name": "Payhip",
     "type": "international",
     "method": "cftrace",
-    "domain": "www.etsy.com",
-    "icon": "https://icons.duckduckgo.com/ip3/www.etsy.com.ico",
+    "domain": "payhip.com",
+    "icon": "https://icons.duckduckgo.com/ip3/payhip.com.ico",
     "extra": ["ecommerce"]
   },
   {
-    "name": "shopee.com",
+    "name": "Lemon Squeezy",
     "type": "international",
     "method": "cftrace",
-    "domain": "shopee.com",
-    "icon": "https://icons.duckduckgo.com/ip3/shopee.com.ico",
+    "domain": "www.lemonsqueezy.com",
+    "icon": "https://icons.duckduckgo.com/ip3/www.lemonsqueezy.com.ico",
     "extra": ["ecommerce"]
   },
   {
-    "name": "lazada.com",
+    "name": "Sellfy",
     "type": "international",
     "method": "cftrace",
-    "domain": "www.lazada.com",
-    "icon": "https://icons.duckduckgo.com/ip3/www.lazada.com.ico",
+    "domain": "sellfy.com",
+    "icon": "https://icons.duckduckgo.com/ip3/sellfy.com.ico",
     "extra": ["ecommerce"]
   }
 ]
